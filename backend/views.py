@@ -2,6 +2,7 @@
 import datetime
 
 import joblib
+import numpy as np
 import torch
 
 from utils import *
@@ -13,7 +14,6 @@ from django.http import HttpResponse
 import pickle
 import pandas as pd
 from collections import defaultdict
-from torch.nn.utils.rnn import pad_sequence
 
 
 def sankey(request):
@@ -196,10 +196,10 @@ def patientAdmittedProb(request):
 
     data = data.sort_values(by='AreaSequence')
 
-    now_area_sequence = data.loc[(data['StartTime'] <= time) & (
-        data['EndTime'] >= time), 'AreaSequence'].values[0]
-    now_area = data.loc[(data['StartTime'] <= time) & (
-        data['EndTime'] >= time), 'CurrentArea'].values[0]
+    now_area_sequence = data[(data['StartTime'] <= time) & (
+        data['EndTime'] >= time)]['AreaSequence'].values[0]
+    now_area = data[(data['StartTime'] <= time) & (
+        data['EndTime'] >= time)]['CurrentArea'].values[0]
 
     Pathway = data['Pathway'].values[0]
     FirstTimetoED = pd.Timestamp(
@@ -223,7 +223,7 @@ def patientAdmittedProb(request):
             else:
                 patient.append(total_mins[i//2-1])
 
-    for i in range(4, len(patient), 2):
+    for i in range(3, len(patient), 2):
         if patient[i] == 0:
             patient[i-1] += patient[i+1]
             del patient[i]
@@ -248,7 +248,7 @@ def patientAdmittedProb(request):
     other_features = patient[:2]
 
     extractor = LSTM().to(device)
-    extractor.load_state_dict(torch.load(filepath('models/lstm_xgb/lstm.pth')))
+    extractor.load_state_dict(torch.load(filepath('models/lstm_lgb/lstm.pth')))
     extractor.eval()
     with torch.no_grad():
         region_embed = extractor.region_embedding(region_sequences)
@@ -260,7 +260,7 @@ def patientAdmittedProb(request):
     extracted_features = np.concatenate(
         [other_features, extracted_features])
     extracted_features = extracted_features.reshape(1, -1)
-    classifier = joblib.load(filepath('models/lstm_xgb/xgb.dta'))
+    classifier = joblib.load(filepath('models/lstm_lgb/lgb.dta'))
     predict_proba = classifier.predict_proba(
         extracted_features)[:, 1][0]
     temp['prob'] = str(predict_proba)

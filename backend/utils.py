@@ -1,14 +1,13 @@
-import pickle
 import sys
 
-import numpy as np
 import pandas as pd
-
+from functools import lru_cache
 
 def filepath(file_name: str):
     return sys.path[0]+file_name
 
 
+@lru_cache(maxsize=None)
 def read_data(file_name: str):
     data = pd.read_csv(filepath(file_name))
     all_patients = data[data['AreaSequence'] == 1]['SpellID_Anon'].values
