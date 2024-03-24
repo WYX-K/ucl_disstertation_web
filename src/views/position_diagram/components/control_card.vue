@@ -73,15 +73,16 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { SyncOutlined, MinusCircleOutlined } from '@ant-design/icons-vue'
 import { getPatientDataByTime, getDateRange } from '@/api/position_diagram'
 import { areasDataStore } from '@/store/area_data'
 import { runStateStore } from '@/store/run_state'
 import dayjs from 'dayjs'
 
-defineProps({
+const props = defineProps({
   isLoading: Boolean,
+  numClick: Number,
 })
 
 const iconoffset = ref(true)
@@ -131,6 +132,15 @@ const openChange = async (status) => {
   clearAreas()
 }
 
+watch(
+  () => props.numClick,
+  (newVal) => {
+    if (newVal) {
+      isPaused.value = true
+      clearTimer()
+    }
+  }
+)
 const onPause = (e) => {
   if (!isPaused.value) {
     clearTimer()

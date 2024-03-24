@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-row space-x-44 items-center">
     <visualCard :isLoading @clickInfo="onclickInfo" />
-    <control-card :isLoading />
+    <control-card :isLoading :numClick/>
     <patient-info :clickInfo :numClick></patient-info>
   </div>
 </template>

@@ -5,11 +5,11 @@ const routes = [
     path: '/',
     redirect: { name: 'Sankey Diagram' },
   },
-  {
-    path: '/basic_data',
-    name: 'Basic Data',
-    component: () => import('@/views/basic_data.vue'),
-  },
+  // {
+  //   path: '/basic_data',
+  //   name: 'Basic Data',
+  //   component: () => import('@/views/basic_data.vue'),
+  // },
   {
     path: '/sankey_diagram',
     name: 'Sankey Diagram',
