@@ -223,11 +223,14 @@ def patientAdmittedProb(request):
             else:
                 patient.append(total_mins[i//2-1])
 
-    for i in range(3, len(patient), 2):
-        if patient[i] == 0:
-            patient[i-1] += patient[i+1]
-            del patient[i]
-            del patient[i]
+    for i in range(4, len(patient), 2):
+        if i < len(patient):
+            if patient[i] == 0:
+                patient[i-1] += patient[i+1]
+                del patient[i]
+                del patient[i]
+        else:
+            break
 
     temp = {
         'id': str(SpellID_Anon),
